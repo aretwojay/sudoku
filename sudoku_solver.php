@@ -3,7 +3,7 @@
 class Sudoku {
 
     public function __construct($size){
-        //le nombre maximal qu'on peut afficher
+        //le nombre maximal qu'on peut afficher dans une case
         $this->size = $size  * $size;
     }
 
@@ -12,6 +12,10 @@ class Sudoku {
         $square_X = $row - $row % $sqrt_size;
         $square_Y = $col - $col % $sqrt_size;
 
+        if (!isset($grid[$row][$col])){
+            return false;
+        }
+        
         //check si le chiffre n'est pas sur la meme ligne
         for ($i = 0; $i < $this->size; $i++){
             if ($grid[$row][$i] == $val){
@@ -51,6 +55,10 @@ class Sudoku {
             $col = 0;
         }
 
+        if (!isset($grid[$row][$col]) || !isset($grid[$this->size - 1][0])){
+            return false;
+        }
+
         if ($grid[$row][$col] !== "."){
             return self::solve($grid, $row, $col + 1);
         }
@@ -74,17 +82,18 @@ class Sudoku {
 
     public function print(){
         if (isset($this->grid)){
-            echo "new grid : " . PHP_EOL. implode("\n", $this->grid) . PHP_EOL;
+            echo implode("\n", $this->grid) . PHP_EOL;
         }
         else {
-            echo "Impossible à résoudre sah" . PHP_EOL;
+            echo "Grille impossible à résoudre" . PHP_EOL;
         }
     }
 }
 
-if (isset($argv[1]) && isset($argv[2]) && is_file($argv[2])){
+if (isset($argv[1]) && isset($argv[2]) &&
+    is_numeric($argv[1]) && is_file($argv[2])){
     $sudoku = new Sudoku($argv[1]);
     $grid = explode("\n", file_get_contents($argv[2]));
-    $sudoku->solve($grid,0,0);
+    $sudoku->solve($grid, 0, 0);
     $sudoku->print();
 }
